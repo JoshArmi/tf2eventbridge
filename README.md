@@ -6,6 +6,14 @@ This allows for tracking of SLOs as a platform engineering team for activities s
 
 In a real-world scenario you would embed the `plan2event.py` into your CI build to generate the request events, and into your CD build to generate the created events. However, for the proof of concept we'll do that locally.
 
+## Recording of Talk
+
+[![](http://img.youtube.com/vi/MCHR_wJ0-Oc/0.jpg)](http://www.youtube.com/watch?v=MCHR_wJ0-Oc "Lean Product Delivery through SRE and SLOs")
+
+### Slides
+
+The slides are available [here](<./Progressive%20Delivery%20Conf%20(2).pdf>)
+
 ## Architecture
 
 ![High Level Architecture](./slo_infrastructure.png)
