@@ -1,0 +1,90 @@
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  EventHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./functions
+      Environment:
+        Variables:
+          EVENT_STORE_TABLE_NAME: !Ref EventStore
+          TSDB_DB_NAME: !Ref Database
+          TSDB_TABLE_NAME: !Ref Table
+      Handler: handler.handle
+      Runtime: python3.8
+      Role: !GetAtt Role.Arn
+      Events:
+        DomainEvents:
+          Type: CloudWatchEvent
+          Properties:
+            Pattern:
+              source:
+                - prefix: "josharmi"
+
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: DynamoDB
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                Resource:
+                  - !GetAtt EventStore.Arn
+        - PolicyName: TimeStream
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - timestream:DescribeEndpoints
+                Resource: "*"
+        - PolicyName: TimeStreamTable
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - timestream:WriteRecords
+                Resource:
+                  - !GetAtt Table.Arn
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  Database:
+    Type: AWS::Timestream::Database
+    Properties:
+      DatabaseName: SLO
+
+  Table:
+    Type: AWS::Timestream::Table
+    Properties:
+      DatabaseName: !Ref Database
+      RetentionProperties:
+        MemoryStoreRetentionPeriodInHours: "24"
+        MagneticStoreRetentionPeriodInDays: "7"
+      TableName: Events
+
+  EventStore:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "PKEY"
+          AttributeType: "S"
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: "PKEY"
+          KeyType: "HASH"
+      TableName: EventStore

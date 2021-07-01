@@ -12,7 +12,7 @@ In a real-world scenario you would embed the `plan2event.py` into your CI build 
 
 ### Slides
 
-The slides are available [here](<./Progressive%20Delivery%20Conf%20(2).pdf>)
+The slides are available [here](<./../progressive_delivery_conf.pdf>)
 
 ## Architecture
 
@@ -20,15 +20,19 @@ The slides are available [here](<./Progressive%20Delivery%20Conf%20(2).pdf>)
 
 ## How to use
 
+### Prerequisities
+
+- Python 3.8 installed and available
+- AWS SAM CLI installed
+- Terraform 1.0+ installed
+
 ### Assume a role that has organization access
 
 1. `. awsume <your-role-name>`
 
 ### Deploy the backend infrastructure
 
-1. `cd slo-infra`
-2. `sls deploy -r eu-west-1`
-3. `cd ..`
+1. `sam build && sam deploy`
 
 ### Run the terraform plan for an account
 

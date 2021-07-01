@@ -25,3 +25,5 @@ plan.out
 plan.out.json
 
 .vscode
+
+.aws-sam
